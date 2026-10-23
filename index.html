@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#6d28d9">
+<title>Akela AI — Bitrix24 yordamchisi</title>
+<meta name="description" content="Akela Group Bitrix24 bo'yicha AI yordamchi: lidlar, sotuv, foyda, xodimlar intizomi.">
+<meta name="akela-api" content="https://akelagroupmachinery-test-hospital-39588269.dev.odoo.com">
+<style>
+:root{
+  --bg:#f6f4fc;
+  --panel:rgba(255,255,255,.78);
+  --panel-solid:#ffffff;
+  --side:rgba(255,255,255,.62);
+  --line:rgba(109,40,217,.14);
+  --line-strong:rgba(109,40,217,.26);
+  --fg:#1d1830;
+  --fg-soft:#4b4460;
+  --muted:#7a7391;
+  --accent:#6d28d9;
+  --accent-strong:#5b21b6;
+  --accent-soft:rgba(124,58,237,.09);
+  --accent-fg:#ffffff;
+  --bubble:#ffffff;
+  --bubble-user:#6d28d9;
+  --danger:#dc2626;
+  --ok:#16a34a;
+  --shadow:0 24px 60px -34px rgba(76,29,149,.42);
+  --r-lg:20px; --r-md:14px; --r-sm:10px;
+}
+body.dark{
+  --bg:#100c1c;
+  --panel:rgba(32,26,50,.82);
+  --panel-solid:#1e1832;
+  --side:rgba(28,22,45,.72);
+  --line:rgba(167,139,250,.18);
+  --line-strong:rgba(167,139,250,.34);
+  --fg:#f3effd;
+  --fg-soft:#c9c0e2;
+  --muted:#a79fc4;
+  --accent:#8b5cf6;
+  --accent-strong:#a78bfa;
+  --accent-soft:rgba(167,139,250,.14);
+  --accent-fg:#ffffff;
+  --bubble:#241d3b;
+  --bubble-user:#6d28d9;
+  --danger:#f87171;
+  --ok:#4ade80;
+  --shadow:0 24px 60px -34px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);color:var(--fg);font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;overflow:hidden;
+  transition:background .25s ease,color .25s ease;
+}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+
+.shell{height:100dvh;display:flex;align-items:stretch;justify-content:center}
+
+/* ---------- sidebar ---------- */
+.side{
+  width:268px;flex:0 0 268px;display:flex;flex-direction:column;gap:14px;padding:18px 14px;
+  background:var(--side);border-right:1px solid var(--line);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+.brand{display:flex;align-items:center;gap:11px;padding:4px 6px 2px}
+.brand-mark{
+  width:38px;height:38px;border-radius:12px;flex:0 0 auto;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(145deg,#7c3aed,#5b21b6);box-shadow:0 10px 22px -12px rgba(109,40,217,.8);
+}
+.brand-txt{min-width:0}
+.brand-name{font-size:15px;font-weight:700;letter-spacing:-.2px}
+.brand-sub{font-size:11.5px;color:var(--muted);margin-top:1px}
+
+.new-chat{
+  display:flex;align-items:center;justify-content:center;gap:8px;height:42px;border:0;border-radius:12px;
+  background:var(--accent);color:var(--accent-fg);font-size:13.5px;font-weight:600;
+  transition:background .2s ease,transform .2s ease;
+}
+.new-chat:hover{background:var(--accent-strong)}
+.new-chat:active{transform:scale(.985)}
+
+.side-label{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);padding:4px 8px 0}
+
+.hist{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px;margin:0 -4px;padding:0 4px}
+.hist::-webkit-scrollbar{width:8px}
+.hist::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:99px}
+.hist-empty{font-size:12.5px;color:var(--muted);padding:8px 10px;line-height:1.5}
+.hist-item{
+  position:relative;display:flex;align-items:center;gap:6px;width:100%;padding:9px 10px;border:1px solid transparent;
+  border-radius:10px;background:transparent;text-align:left;font-size:13px;color:var(--fg-soft);
+  transition:background .16s ease,color .16s ease;
+}
+.hist-item:hover{background:var(--accent-soft);color:var(--fg)}
+.hist-item.active{background:var(--accent-soft);border-color:var(--line);color:var(--fg);font-weight:600}
+.hist-title{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-del{
+  width:22px;height:22px;flex:0 0 auto;border:0;border-radius:6px;background:transparent;color:var(--muted);
+  font-size:14px;line-height:1;display:grid;place-items:center;opacity:0;transition:opacity .16s ease,background .16s ease;
+}
+.hist-item:hover .hist-del,.hist-item.active .hist-del{opacity:1}
+.hist-del:hover{background:var(--accent-soft);color:var(--danger)}
+
+.side-foot{padding-top:10px;border-top:1px solid var(--line)}
+.settings-btn{
+  display:flex;align-items:center;gap:9px;width:100%;padding:9px 10px;border:0;border-radius:10px;
+  background:transparent;color:var(--fg-soft);font-size:13px;text-align:left;transition:background .16s ease,color .16s ease;
+}
+.settings-btn:hover{background:var(--accent-soft);color:var(--fg)}
+
+/* ---------- main ---------- */
+.main{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--panel);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+
+.top{
+  display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line);min-height:60px;
+}
+.menu-btn{
+  display:none;width:36px;height:36px;flex:0 0 auto;border:1px solid var(--line);border-radius:10px;
+  background:transparent;color:var(--fg);place-items:center;
+}
+.top-title{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.top-sub{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.msgs{
+  flex:1;overflow-y:auto;padding:22px 22px 8px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth;
+}
+.msgs::-webkit-scrollbar{width:9px}
+.msgs::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:99px}
+
+.welcome{margin:auto;text-align:center;max-width:430px;padding:20px}
+.welcome h1{font-size:20px;font-weight:700;letter-spacing:-.3px;margin-bottom:8px}
+.welcome p{font-size:13.5px;color:var(--muted);line-height:1.6}
+
+.msg{max-width:min(78%,680px);padding:12px 15px;border-radius:16px;font-size:14.5px;line-height:1.6;
+  word-wrap:break-word;overflow-wrap:anywhere;animation:in .25s ease both}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg.bot{align-self:flex-start;background:var(--bubble);border:1px solid var(--line);border-bottom-left-radius:6px;box-shadow:var(--shadow)}
+.msg.user{align-self:flex-end;background:var(--bubble-user);color:#fff;border-bottom-right-radius:6px}
+.msg b,.msg strong{font-weight:700}
+.msg.bot b,.msg.bot strong{color:var(--accent-strong)}
+.msg.user b,.msg.user strong{color:#fff}
+.msg code{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;background:var(--accent-soft);color:var(--accent-strong);
+  padding:1px 5px;border-radius:5px}
+.msg.user code{background:rgba(255,255,255,.18);color:#fff}
+.msg table{width:100%;border-collapse:collapse;margin:8px 0;font-size:13px}
+.msg th,.msg td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+.msg th{color:var(--accent-strong);font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;font-weight:700}
+
+.typing{display:inline-flex;gap:5px;align-items:center;height:16px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--accent);display:block;animation:blink 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.15s}
+.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,60%,100%{opacity:.35;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+
+.retry{margin-top:9px;border:1px solid var(--line-strong);background:transparent;border-radius:8px;
+  padding:5px 10px;font-size:12px;color:var(--accent-strong)}
+.retry:hover{background:var(--accent-soft)}
+
+/* ---------- composer ---------- */
+.composer{padding:10px 18px 16px;border-top:1px solid var(--line);background:var(--panel)}
+.field{
+  display:flex;align-items:flex-end;gap:8px;padding:7px 7px 7px 14px;border-radius:16px;
+  background:var(--panel-solid);border:1px solid var(--line);transition:border-color .2s ease,box-shadow .2s ease;
+}
+.field:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+textarea{
+  flex:1;min-width:0;border:0;outline:0;resize:none;background:transparent;font-size:14.5px;line-height:1.5;
+  max-height:150px;padding:8px 0 7px;
+}
+textarea::placeholder{color:var(--muted)}
+.send{
+  width:42px;height:42px;flex:0 0 auto;border:0;border-radius:12px;display:grid;place-items:center;
+  background:var(--accent);color:#fff;transition:background .2s ease,opacity .2s ease;
+}
+.send:hover{background:var(--accent-strong)}
+.send:disabled{opacity:.45;cursor:not-allowed}
+.foot{font-size:10.5px;color:var(--muted);padding:7px 4px 0;display:flex;justify-content:space-between;gap:10px}
+
+/* ---------- settings ---------- */
+.overlay{
+  position:fixed;inset:0;z-index:30;background:rgba(20,14,36,.42);backdrop-filter:blur(3px);
+  display:none;align-items:center;justify-content:center;padding:16px;
+}
+.overlay.open{display:flex}
+.modal{
+  width:100%;max-width:420px;max-height:88dvh;overflow-y:auto;background:var(--panel-solid);border:1px solid var(--line);
+  border-radius:18px;box-shadow:0 40px 80px -40px rgba(0,0,0,.6);padding:20px;animation:in .2s ease both;
+}
+.modal h2{font-size:16px;font-weight:700;margin-bottom:16px}
+.row{margin-bottom:16px}
+.row > label{display:block;font-size:12px;font-weight:600;color:var(--fg-soft);margin-bottom:7px}
+.seg{display:flex;gap:6px;padding:4px;border:1px solid var(--line);border-radius:12px;background:var(--accent-soft)}
+.seg button{flex:1;height:34px;border:0;border-radius:9px;background:transparent;font-size:13px;font-weight:600;color:var(--fg-soft)}
+.seg button.on{background:var(--panel-solid);color:var(--accent-strong);box-shadow:var(--shadow)}
+.row input{
+  width:100%;height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:transparent;
+  font-size:13.5px;outline:0;
+}
+.row input:focus{border-color:var(--accent)}
+.hint{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5}
+.status-line{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5;min-height:16px}
+.status-line.ok{color:var(--ok)}
+.status-line.bad{color:var(--danger)}
+.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+.btn{height:38px;padding:0 16px;border-radius:10px;border:1px solid var(--line-strong);background:transparent;font-size:13px;font-weight:600}
+.btn:hover{background:var(--accent-soft)}
+.btn.primary{background:var(--accent);border-color:transparent;color:#fff}
+.btn.primary:hover{background:var(--accent-strong)}
+.btn.danger{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 40%,transparent)}
+.btn.ghost{width:auto}
+.clear-history{margin-top:4px}
+
+/* ---------- mobile ---------- */
+@media(max-width:860px){
+  .side{
+    position:fixed;inset:0 auto 0 0;z-index:25;width:min(84vw,290px);transform:translateX(-102%);
+    transition:transform .25s ease;box-shadow:0 0 60px rgba(0,0,0,.35);background:var(--panel-solid);
+  }
+  .side.open{transform:none}
+  .menu-btn{display:grid}
+  .msgs{padding:16px 14px 6px}
+  .msg{max-width:90%}
+  .composer{padding:8px 12px 12px}
+  .top{padding:12px 14px}
+  .scrim{position:fixed;inset:0;z-index:24;background:rgba(20,14,36,.4);display:none}
+  .scrim.open{display:block}
+}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side" id="side">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 4v3M12 17v3M4 12h3M17 12h3M6.6 6.6l2.1 2.1M15.3 15.3l2.1 2.1M17.4 6.6l-2.1 2.1M8.7 15.3l-2.1 2.1"/>
+          <circle cx="12" cy="12" r="3.2"/>
+        </svg>
+      </div>
+      <div class="brand-txt">
+        <div class="brand-name">Akela AI</div>
+        <div class="brand-sub">Bitrix24 yordamchisi</div>
+      </div>
+    </div>
+
+    <button class="new-chat" id="newChat" type="button">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      Yangi suhbat
+    </button>
+
+    <div class="side-label">Suhbat tarixi</div>
+    <div class="hist" id="hist"></div>
+
+    <div class="side-foot">
+      <button class="settings-btn" id="openSettings" type="button">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1.1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/>
+        </svg>
+        Sozlamalar
+      </button>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <main class="main">
+    <header class="top">
+      <button class="menu-btn" id="menuBtn" type="button" aria-label="Menyu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <div style="min-width:0">
+        <div class="top-title" id="topTitle">Yangi suhbat</div>
+        <div class="top-sub" id="topSub">Bitrix24 ma'lumotlari asosida javob beradi</div>
+      </div>
+    </header>
+
+    <div class="msgs" id="msgs" aria-live="polite"></div>
+
+    <form class="composer" id="form">
+      <div class="field">
+        <textarea id="input" rows="1" placeholder="Savolingizni yozing..." autocomplete="off"></textarea>
+        <button class="send" id="send" type="submit" aria-label="Yuborish">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg>
+        </button>
+      </div>
+      <div class="foot"><span>Bitrix24 · O'zbek / Русский</span><span>Enter — yuborish, Shift+Enter — yangi qator</span></div>
+    </form>
+  </main>
+</div>
+
+<div class="overlay" id="settings">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <h2 id="settingsTitle">Sozlamalar</h2>
+
+    <div class="row">
+      <label>Ko'rinish</label>
+      <div class="seg" id="themeSeg">
+        <button type="button" data-theme="light">Yorug'</button>
+        <button type="button" data-theme="dark">Qorong'i</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <label for="apiInput">Server manzili</label>
+      <input id="apiInput" type="url" spellcheck="false" placeholder="https://..." />
+      <div class="hint">Bo'sh qoldirilsa, sahifadagi standart manzil ishlatiladi.</div>
+    </div>
+
+    <div class="row">
+      <label for="tokenInput">Kirish paroli (token)</label>
+      <input id="tokenInput" type="password" autocomplete="off" spellcheck="false" placeholder="ixtiyoriy" />
+      <div class="hint">Serverda parol qo'yilgan bo'lsa, kiriting.</div>
+    </div>
+
+    <div class="row">
+      <label>Ulanish</label>
+      <button class="btn ghost" id="checkBtn" type="button">Tekshirish</button>
+      <div class="status-line" id="statusLine"></div>
+    </div>
+
+    <div class="row clear-history">
+      <button class="btn danger" id="clearAll" type="button">Barcha suhbat tarixini o'chirish</button>
+    </div>
+
+    <div class="actions">
+      <button class="btn" id="closeSettings" type="button">Yopish</button>
+      <button class="btn primary" id="saveSettings" type="button">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var META = document.querySelector('meta[name="akela-api"]');
+  var LS = {
+    chats: "akela_chats_v3",
+    active: "akela_active_v3",
+    api: "akela_api_v3",
+    token: "akela_token_v3",
+    theme: "akela_theme_v3"
+  };
+
+  var msgsEl = document.getElementById("msgs");
+  var form = document.getElementById("form");
+  var input = document.getElementById("input");
+  var sendBtn = document.getElementById("send");
+  var histEl = document.getElementById("hist");
+  var topTitle = document.getElementById("topTitle");
+  var topSub = document.getElementById("topSub");
+  var side = document.getElementById("side");
+  var scrim = document.getElementById("scrim");
+
+  var chats = [];
+  var activeId = null;
+  var busy = false;
+
+  /* ---------------- storage ---------------- */
+  function read(key, fallback) {
+    try {
+      var raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch (e) { return fallback; }
+  }
+  function write(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { }
+  }
+  function str(key, fallback) {
+    try { return localStorage.getItem(key) || fallback; } catch (e) { return fallback; }
+  }
+
+  function loadState() {
+    chats = read(LS.chats, []);
+    if (!Array.isArray(chats)) chats = [];
+    activeId = str(LS.active, "");
+    if (!chats.some(function (c) { return c.id === activeId; })) {
+      activeId = chats.length ? sorted()[0].id : null;
+    }
+  }
+  function saveState() {
+    write(LS.chats, chats);
+    try { localStorage.setItem(LS.active, activeId || ""); } catch (e) { }
+  }
+  function sorted() {
+    return chats.slice().sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+  }
+  function getChat(id) {
+    for (var i = 0; i < chats.length; i++) if (chats[i].id === id) return chats[i];
+    return null;
+  }
+
+  /* ---------------- api ---------------- */
+  function baseUrl() {
+    var custom = str(LS.api, "");
+    return (custom || (META && META.content) || "").replace(/\/+$/, "");
+  }
+  function apiRoot() {
+    var b = baseUrl();
+    if (!b) return "";
+    if (/\/akela_ai$/.test(b)) return b + "/api";
+    if (/\/api$/.test(b)) return b;
+    if (/odoo/i.test(b)) return b + "/akela_ai/api";
+    return b + "/api";
+  }
+  function headers(json) {
+    var h = {};
+    var token = str(LS.token, "");
+    if (json) h["Content-Type"] = "application/json";
+    if (token) { h["X-Akela-Token"] = token; h["X-Api-Token"] = token; }
+    return h;
+  }
+
+  /* ---------------- formatting ---------------- */
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
+    });
+  }
+  function fmt(text) {
+    var s = esc(text);
+    s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
+    s = s.replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+    s = s.replace(/(^|\n)[-•]\s+/g, "$1• ");
+
+    var lines = s.split(/\n/), out = [], i = 0;
+    while (i < lines.length) {
+      if (/^\s*\|.*\|\s*$/.test(lines[i])) {
+        var rows = [];
+        while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) {
+          rows.push(lines[i].trim().replace(/^\||\|$/g, "").split("|").map(function (c) { return c.trim(); }));
+          i++;
+        }
+        var body = rows.filter(function (r) {
+          return !r.every(function (c) { return /^-{2,}$/.test(c.replace(/\s/g, "")); });
+        });
+        if (body.length) {
+          var head = body.shift();
+          var html = "<table><thead><tr>" + head.map(function (c) { return "<th>" + c + "</th>"; }).join("") + "</tr></thead><tbody>";
+          body.forEach(function (r) {
+            html += "<tr>" + r.map(function (c) { return "<td>" + c + "</td>"; }).join("") + "</tr>";
+          });
+          out.push(html + "</tbody></table>");
+        }
+        continue;
+      }
+      out.push(lines[i]);
+      i++;
+    }
+    return out.join("\n").replace(/\n/g, "<br>");
+  }
+
+  /* ---------------- history ui ---------------- */
+  function renderHist() {
+    histEl.innerHTML = "";
+    var list = sorted();
+    if (!list.length) {
+      var empty = document.createElement("div");
+      empty.className = "hist-empty";
+      empty.textContent = "Hozircha suhbat yo'q.";
+      histEl.appendChild(empty);
+      return;
+    }
+    list.forEach(function (c) {
+      var row = document.createElement("div");
+      row.className = "hist-item" + (c.id === activeId ? " active" : "");
+      row.setAttribute("role", "button");
+      row.tabIndex = 0;
+
+      var title = document.createElement("span");
+      title.className = "hist-title";
+      title.textContent = c.title || "Suhbat";
+
+      var del = document.createElement("button");
+      del.type = "button";
+      del.className = "hist-del";
+      del.setAttribute("aria-label", "O'chirish");
+      del.textContent = "\u00d7";
+      del.addEventListener("click", function (e) {
+        e.stopPropagation();
+        removeChat(c.id);
+      });
+
+      row.appendChild(title);
+      row.appendChild(del);
+      row.addEventListener("click", function () { openChat(c.id); });
+      row.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openChat(c.id); }
+      });
+      histEl.appendChild(row);
+    });
+  }
+
+  function updateHeader() {
+    var c = getChat(activeId);
+    if (!c) {
+      topTitle.textContent = "Yangi suhbat";
+      topSub.textContent = "Bitrix24 ma'lumotlari asosida javob beradi";
+    } else {
+      topTitle.textContent = c.title || "Suhbat";
+      topSub.textContent = c.messages.length + " xabar";
+    }
+  }
+
+  function renderMessages() {
+    msgsEl.innerHTML = "";
+    var c = getChat(activeId);
+    if (!c || !c.messages.length) {
+      var w = document.createElement("div");
+      w.className = "welcome";
+      w.innerHTML = '<h1>Assalomu alaykum</h1><p>Bitrix24 bo\u2019yicha savolingizni yozing: lidlar, sotuv, foyda, xodimlar intizomi.</p>';
+      msgsEl.appendChild(w);
+      return;
+    }
+    c.messages.forEach(function (m) {
+      msgsEl.appendChild(messageNode(m));
+    });
+    scrollBottom();
+  }
+
+  function messageNode(m) {
+    var el = document.createElement("div");
+    el.className = "msg " + (m.role === "user" ? "user" : "bot");
+    el.innerHTML = fmt(m.content || "");
+    if (m.error) {
+      var retry = document.createElement("button");
+      retry.type = "button";
+      retry.className = "retry";
+      retry.textContent = "Qayta urinish";
+      retry.addEventListener("click", function () {
+        el.remove();
+        var c = getChat(activeId);
+        if (c) {
+          c.messages = c.messages.filter(function (x) { return x !== m; });
+          saveState();
+        }
+        send(m.question || "");
+      });
+      el.appendChild(retry);
+    }
+    return el;
+  }
+
+  function scrollBottom() { msgsEl.scrollTop = msgsEl.scrollHeight; }
+
+  /* ---------------- chat actions ---------------- */
+  function newChat() {
+    var id = "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    chats.push({ id: id, title: "Yangi suhbat", ts: Date.now(), messages: [] });
+    activeId = id;
+    saveState();
+    renderHist();
+    updateHeader();
+    renderMessages();
+    closeSide();
+    input.focus();
+  }
+
+  function openChat(id) {
+    if (id === activeId) { closeSide(); return; }
+    activeId = id;
+    saveState();
+    renderHist();
+    updateHeader();
+    renderMessages();
+    closeSide();
+  }
+
+  function removeChat(id) {
+    chats = chats.filter(function (c) { return c.id !== id; });
+    if (activeId === id) {
+      activeId = chats.length ? sorted()[0].id : null;
+      renderMessages();
+      updateHeader();
+    }
+    saveState();
+    renderHist();
+  }
+
+  function ensureChat() {
+    if (getChat(activeId)) return getChat(activeId);
+    newChat();
+    return getChat(activeId);
+  }
+
+  function pushMessage(chat, role, content, extra) {
+    var m = { role: role, content: content };
+    if (extra) for (var k in extra) if (Object.prototype.hasOwnProperty.call(extra, k)) m[k] = extra[k];
+    chat.messages.push(m);
+    chat.ts = Date.now();
+    if (role === "user" && chat.messages.filter(function (x) { return x.role === "user"; }).length === 1) {
+      chat.title = content.length > 42 ? content.slice(0, 42) + "\u2026" : content;
+    }
+    saveState();
+    return m;
+  }
+
+  function appendNode(node) {
+    msgsEl.appendChild(node);
+    scrollBottom();
+  }
+
+  function removeWelcome() {
+    var w = msgsEl.querySelector(".welcome");
+    if (w) w.remove();
+  }
+
+  async function send(question) {
+    question = String(question || "").trim();
+    if (!question || busy) return;
+    busy = true;
+    sendBtn.disabled = true;
+
+    var chat = ensureChat();
+    removeWelcome();
+    var msg = pushMessage(chat, "user", question);
+    appendNode(messageNode(msg));
+    renderHist();
+    updateHeader();
+
+    var typing = document.createElement("div");
+    typing.className = "msg bot";
+    typing.innerHTML = '<div class="typing"><i></i><i></i><i></i></div>';
+    appendNode(typing);
+
+    try {
+      var res = await fetch(apiRoot() + "/ask", {
+        method: "POST",
+        headers: headers(true),
+        body: JSON.stringify({ q: question, question: question })
+      });
+      var data = await res.json().catch(function () { return {}; });
+      typing.remove();
+
+      if (!res.ok || data.error) {
+        var err = pushMessage(chat, "bot", "Xato: " + (data.error || res.status), { error: true, question: question });
+        appendNode(messageNode(err));
+      } else {
+        var bot = pushMessage(chat, "bot", data.answer || "Javob kelmadi.", { question: question });
+        appendNode(messageNode(bot));
+      }
+    } catch (e) {
+      typing.remove();
+      var netErr = pushMessage(chat, "bot", "Serverga ulanib bo'lmadi. Internet va sozlamalardagi manzilni tekshiring.", { error: true, question: question });
+      appendNode(messageNode(netErr));
+    } finally {
+      busy = false;
+      sendBtn.disabled = false;
+      updateHeader();
+      renderHist();
+      input.focus();
+    }
+  }
+
+  /* ---------------- server history import ---------------- */
+  async function importServerHistory() {
+    if (chats.length) return;
+    try {
+      var r = await fetch(apiRoot() + "/history", { headers: headers(false) });
+      if (!r.ok) return;
+      var d = await r.json();
+      var list = d && d.messages ? d.messages : [];
+      if (!list.length) return;
+      var id = "c" + Date.now().toString(36);
+      var chat = { id: id, title: "Suhbat tarixi", ts: Date.now(), messages: [] };
+      list.forEach(function (m) {
+        chat.messages.push({ role: m.role === "user" ? "user" : "bot", content: m.content || "" });
+      });
+      chats.push(chat);
+      activeId = id;
+      saveState();
+      renderHist();
+      updateHeader();
+      renderMessages();
+    } catch (e) { }
+  }
+
+  /* ---------------- theme ---------------- */
+  function applyTheme(theme) {
+    document.body.classList.toggle("dark", theme === "dark");
+    var seg = document.getElementById("themeSeg");
+    Array.prototype.forEach.call(seg.children, function (b) {
+      b.classList.toggle("on", b.getAttribute("data-theme") === theme);
+    });
+    try { localStorage.setItem(LS.theme, theme); } catch (e) { }
+  }
+  function currentTheme() {
+    var saved = str(LS.theme, "");
+    if (saved === "dark" || saved === "light") return saved;
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+
+  /* ---------------- settings ---------------- */
+  var settings = document.getElementById("settings");
+  var apiInput = document.getElementById("apiInput");
+  var tokenInput = document.getElementById("tokenInput");
+  var statusLine = document.getElementById("statusLine");
+
+  function openSettings() {
+    apiInput.value = str(LS.api, "");
+    tokenInput.value = str(LS.token, "");
+    statusLine.className = "status-line";
+    statusLine.textContent = "";
+    settings.classList.add("open");
+    closeSide();
+    apiInput.focus();
+  }
+  function closeSettings() { settings.classList.remove("open"); }
+
+  document.getElementById("themeSeg").addEventListener("click", function (e) {
+    var btn = e.target.closest("button[data-theme]");
+    if (btn) applyTheme(btn.getAttribute("data-theme"));
+  });
+
+  document.getElementById("checkBtn").addEventListener("click", async function () {
+    var btn = this;
+    btn.disabled = true;
+    statusLine.className = "status-line";
+    statusLine.textContent = "Tekshirilmoqda...";
+
+    var prevApi = str(LS.api, ""), prevToken = str(LS.token, "");
+    try { localStorage.setItem(LS.api, apiInput.value.trim()); localStorage.setItem(LS.token, tokenInput.value.trim()); } catch (e) { }
+
+    try {
+      var r = await fetch(apiRoot() + "/status", { cache: "no-store", headers: headers(false) });
+      var s = await r.json().catch(function () { return {}; });
+      if (!r.ok) {
+        statusLine.className = "status-line bad";
+        statusLine.textContent = "Server javob bermadi (" + r.status + ").";
+      } else {
+        var bitrixOk = s.bitrix === true || (s.bitrix && s.bitrix.ok) || (s.bitrix && s.bitrix.user);
+        var ready = typeof s.ready === "number" ? s.ready : null;
+        var total = typeof s.total === "number" ? s.total : null;
+        var parts = [];
+        parts.push(bitrixOk ? "Bitrix24 ulangan" : "Bitrix24 ulanmagan");
+        if (ready !== null) parts.push("AI " + ready + (total !== null ? "/" + total : "") + " kanal");
+        statusLine.className = "status-line " + (bitrixOk && (ready === null || ready > 0) ? "ok" : "bad");
+        statusLine.textContent = parts.join(" · ");
+      }
+    } catch (e) {
+      statusLine.className = "status-line bad";
+      statusLine.textContent = "Manzilga ulanib bo'lmadi.";
+    } finally {
+      btn.disabled = false;
+      try { localStorage.setItem(LS.api, prevApi); localStorage.setItem(LS.token, prevToken); } catch (e) { }
+    }
+  });
+
+  document.getElementById("clearAll").addEventListener("click", function () {
+    if (!confirm("Barcha suhbat tarixi o'chirilsinmi?")) return;
+    chats = [];
+    activeId = null;
+    saveState();
+    renderHist();
+    updateHeader();
+    renderMessages();
+    closeSettings();
+  });
+
+  document.getElementById("saveSettings").addEventListener("click", function () {
+    var api = apiInput.value.trim().replace(/\/+$/, "");
+    var token = tokenInput.value.trim();
+    try {
+      if (api) localStorage.setItem(LS.api, api); else localStorage.removeItem(LS.api);
+      if (token) localStorage.setItem(LS.token, token); else localStorage.removeItem(LS.token);
+    } catch (e) { }
+    closeSettings();
+  });
+
+  document.getElementById("closeSettings").addEventListener("click", closeSettings);
+  settings.addEventListener("click", function (e) { if (e.target === settings) closeSettings(); });
+
+  /* ---------------- sidebar (mobile) ---------------- */
+  function openSide() { side.classList.add("open"); scrim.classList.add("open"); }
+  function closeSide() { side.classList.remove("open"); scrim.classList.remove("open"); }
+  document.getElementById("menuBtn").addEventListener("click", function () {
+    if (side.classList.contains("open")) closeSide(); else openSide();
+  });
+  scrim.addEventListener("click", closeSide);
+
+  /* ---------------- composer ---------------- */
+  function autoGrow() {
+    input.style.height = "auto";
+    input.style.height = Math.min(input.scrollHeight, 150) + "px";
+  }
+  input.addEventListener("input", autoGrow);
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      form.requestSubmit();
+    }
+  });
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var q = input.value.trim();
+    if (!q) return;
+    input.value = "";
+    autoGrow();
+    send(q);
+  });
+  document.getElementById("newChat").addEventListener("click", newChat);
+  document.getElementById("openSettings").addEventListener("click", openSettings);
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") { closeSettings(); closeSide(); }
+  });
+
+  /* ---------------- boot ---------------- */
+  applyTheme(currentTheme());
+  loadState();
+  renderHist();
+  updateHeader();
+  renderMessages();
+  importServerHistory();
+  setTimeout(function () { input.focus(); }, 400);
+})();
+</script>
+</body>
+</html>
